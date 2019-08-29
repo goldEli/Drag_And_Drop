@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useRef } from "react";
+import PropTypes, { element } from "prop-types";
 import styled from "styled-components";
 import "./OperationPanle.css";
 import { createUUID } from "../../libs/utils";
+import data from "../data";
 
 const Box = styled.div`
   height: 100%;
@@ -10,27 +11,36 @@ const Box = styled.div`
   position: relative;
 `;
 
-const reRenderData = {
-  "21ed8cda-cae1-47eb-adbd-f6f328cf01ce": {
-    nodeId: "21ed8cda-cae1-47eb-adbd-f6f328cf01ce",
-    text: "数据读取1",
-    position: { x: "244px", y: "103px" }
+const reRenderNodes = [
+  {
+    componentId: "2",
+    nodeId: "89224e7d-b7d2-4e1f-9035-2f0ec07a5ccd",
+    text: "朴素贝叶斯1",
+    x: "160px",
+    y: "75px"
   },
-  "0246c00e-0cba-49f9-af2c-0501a9149d14": {
-    nodeId: "0246c00e-0cba-49f9-af2c-0501a9149d14",
-    text: "数据读取2",
-    position: { x: "159px", y: "180px" }
+  {
+    componentId: "2",
+    nodeId: "801e5434-dde8-453b-97df-11b6fc42cc74",
+    text: "朴素贝叶斯2",
+    x: "284px",
+    y: "149px"
+  },
+  {
+    componentId: "3",
+    nodeId: "a40917e3-0f85-4524-afb8-2e38487b1b34",
+    text: "傅里叶3",
+    x: "108px",
+    y: "166px"
   }
-};
+];
 
-const nodes = {};
+const nodes = [];
 
-const allowDrop = event => {
-  console.log("move");
-  event.preventDefault();
-};
-
-const handleJsPlumb = () => {
+/**
+ * 初始化 jsplumb，并生成实例
+ */
+const initJsPlumb = () => {
   const jsPlumb = window.jsPlumb;
   let instance = jsPlumb.getInstance({
     // ConnectionOverlays: [
@@ -49,13 +59,20 @@ const handleJsPlumb = () => {
     // endpoint: ["Dot", { radius: 5, hoverClass: "myEndpointHover" }],
     // connector: ["Bezier", { curviness: 100 }]
   });
-
   instance.batch(function() {});
   return instance;
 };
 
-const render = (option) => {
-  const {x, y, text, iconClass, container, instance} = option
+/**
+ * 渲染节点
+ * @param {*} x 节点相对容器 y 方向的距离
+ * @param {*} y 节点相对容器 x 方向的距离
+ * @param {*} text 节点文本
+ * @param {*} iconClass 节点的icon
+ * @param {*} container 装节点的容器
+ * @param {*} instance jsplumb实例
+ */
+const render = ({ x, y, text, iconClass, container, instance }) => {
   const nodeDom = document.createElement("div");
   nodeDom.className = "node";
   nodeDom.title = text;
@@ -68,50 +85,95 @@ const render = (option) => {
   `;
   container.append(nodeDom);
   // 让节点可以拖拽
-  instance.draggable(window.jsPlumb.getSelector(".container .node"));
-  return nodeDom
+  // instance.draggable(window.jsPlumb.getSelector(".container .node"));
+  instance.draggable(nodeDom, {
+    containment: container
+  });
+  return nodeDom;
+};
+
+/**
+ * 一次性渲染所有节点
+ * @param {*} nodes 
+ * @param {*} container 
+ * @param {*} instance 
+ */
+const reRender = (nodes, container, instance) => {
+  nodes.forEach(item => {
+    const { componentId } = item;
+    const nodeInfo = data.find(item => item.id === componentId);
+    render({ ...nodeInfo, ...item, container, instance });
+  });
 }
 
+/**
+ * 获取节点展示的位置
+ * @param {*} event 
+ */
+const getPosition = (event) => {
+  const mouseX = event.pageX;
+  const mouseY = event.pageY;
+  const parentX = event.target.offsetLeft;
+  const parentY = event.target.offsetTop;
+  const x = mouseX - parentX + "px";
+  const y = mouseY - parentY + "px";
+  return {x, y}
+}
+
+// jsPlumb 实例
 let instance = null;
-let instanceList = []
+/**
+ * 操作平台组件
+ * @param {*} props
+ */
 const OperationPanle = props => {
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    console.log("============")
-    instance = handleJsPlumb()
+    instance = initJsPlumb();
+    const container = containerRef.current;
+    reRender(reRenderNodes, container, instance)
     return () => {};
   }, []);
 
+  /**
+   * 处理节点释放到容器中
+   * @param {*} event 
+   */
   const drop = event => {
     event.preventDefault();
 
+    // 获取从列表那边获取的数据
     const data = JSON.parse(event.dataTransfer.getData("text"));
 
-    const mouseX = event.pageX;
-    const mouseY = event.pageY;
-    const parentX = event.target.offsetLeft;
-    const parentY = event.target.offsetTop;
-    const x = mouseX - parentX + "px";
-    const y = mouseY - parentY + "px";   
+    // 获取节点展示的位置
+    const {x, y} = getPosition(event)
 
     const container = event.target;
     const UUID = createUUID();
+
+    // 用于保存的节点数据
     const nodeInfo = {
-      id: data.id,
+      componentId: data.id,
       nodeId: UUID,
       text: data.text,
-      position: { x: x, y: y }
+      x,
+      y
     };
-    render({...data, x, y, container, instance})
-    instanceList.push(instance)
-    console.log(instanceList)
-    debugger
-    nodes[UUID] = nodeInfo;
+    render({ ...data, x, y, container, instance });
+    nodes.push(nodeInfo);
     console.log("node info in panle:", JSON.stringify(nodes));
   };
 
-  return <Box className="container" onDrop={drop} onDragOver={allowDrop}></Box>;
+  return (
+    <Box
+      ref={containerRef}
+      className="container"
+      onDrop={drop}
+    ></Box>
+  );
 };
+
 
 OperationPanle.propTypes = {};
 
