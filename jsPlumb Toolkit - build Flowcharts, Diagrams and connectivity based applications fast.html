@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="gr__jsplumbtoolkit_com"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width">
+        <link rel="shortcut icon" href="https://jsplumbtoolkit.com/img/favicon.ico">
+        <script async="" src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/analytics.js"></script><script src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/jquery_002.js"></script>
+        <title>jsPlumb Toolkit - build Flowcharts, Diagrams and connectivity based applications fast</title>
+        <link href="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/css.css" rel="stylesheet">
+<link href="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/font-awesome.css" rel="stylesheet">
+<link href="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/main.css" rel="stylesheet">
+<link rel="stylesheet" href="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/jsplumbtoolkit-defaults.css">
+<link rel="stylesheet" href="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/jsplumbtoolkit-demo.css">
+
+
+
+        <link rel="stylesheet" href="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/app.css">
+    </head>
+
+    <body class="jtk-bootstrap jtk-bootstrap-wide" data-gr-c-s-loaded="true">
+
+        <div class="jtk-header">
+    <a class="jtk-logo" href="https://jsplumbtoolkit.com/"><img src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/logo-medium-jsplumb.png"></a>
+
+    <div class="jtk-nav">
+        <div><a href="https://jsplumbtoolkit.com/demos.html">DEMOS</a></div>
+<div><a href="https://docs.jsplumbtoolkit.com/">DOCS</a></div>
+<div><a href="https://jsplumbtoolkit.com/features">FEATURES</a></div>
+<div><a href="https://jsplumbtoolkit.com/download">DOWNLOAD</a></div>
+<div><a href="https://jsplumbtoolkit.com/purchase">PURCHASE</a></div>
+<div><a href="https://jsplumbtoolkit.com/contact.html">CONTACT</a></div>
+<div><a href="https://blog.jsplumbtoolkit.com/">BLOG</a></div>
+
+    </div>
+
+    <div class="social-nav hidden-xs">
+        <style>
+    .btn-try {
+        background-color: #489ea5;
+        border-radius: 3px;
+        padding: 4px 10px;
+        color: white;
+        outline: none;
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size:17px;
+    }
+
+    .btn-try:hover {
+        background-color: #5eb4bb;
+    }
+
+    .btn-try a {
+        color:whitesmoke;
+        text-decoration: none;
+    }
+
+    .btn-try:hover a {
+        color:white;
+    }
+</style>
+<button class="btn-try">
+    <a href="https://jsplumbtoolkit.com/contact.html">Try Now</a>
+</button>
+    </div>
+</div>
+
+
+        <div class="breadcrumbs">
+            <div class="crumbs">
+                <a href="https://jsplumbtoolkit.com/demos.html">DEMOS</a> &nbsp; → &nbsp; <a href="https://jsplumbtoolkit.com/demos.html#community">community </a> &nbsp; → &nbsp; Drag and Drop
+            </div>
+            <div class="demo-nav">
+                <a class="demo-prev" href="https://jsplumbtoolkit.com/community/demo/lists/index.html">Scrollable Lists</a>
+                &nbsp; ← &nbsp;
+                &nbsp; → &nbsp;
+                <a class="demo-next" href="https://jsplumbtoolkit.com/community/demo/perimeterAnchors/index.html">Perimeter Anchors</a>
+            </div>
+        </div>
+
+        <div class="jtk-page-container">
+            <div class="jtk-container">
+                
+<div class="jtk-demo-main">
+<!-- demo -->
+            <div class="jtk-demo-canvas canvas-wide drag-drop-demo jtk-surface jtk-surface-nopan" id="canvas">
+                <div class="window jtk-endpoint-anchor jtk-managed jtk-draggable jtk-connected" id="dragDropWindow1" style="left: 151px; top: 91px;">one<br><br><a href="#" class="cmdLink hide" rel="dragDropWindow1">toggle connections</a><br><a href="#" class="cmdLink drag" rel="dragDropWindow1">disable dragging</a><br><a href="#" class="cmdLink detach" rel="dragDropWindow1">detach all</a></div>
+                <div class="window jtk-endpoint-anchor jtk-managed jtk-draggable jtk-connected" id="dragDropWindow2" style="left: 542px; top: 166px;">two<br><br><a href="#" class="cmdLink hide" rel="dragDropWindow2">toggle connections</a><br><a href="#" class="cmdLink drag" rel="dragDropWindow2">disable dragging</a><br><a href="#" class="cmdLink detach" rel="dragDropWindow2">detach all</a></div>
+                <div class="window jtk-endpoint-anchor jtk-managed jtk-draggable jtk-connected" id="dragDropWindow3">three<br><br><a href="#" class="cmdLink hide" rel="dragDropWindow3">toggle connections</a><br><a href="#" class="cmdLink drag" rel="dragDropWindow3">disable dragging</a><br><a href="#" class="cmdLink detach" rel="dragDropWindow3">detach all</a></div>
+                <div class="window jtk-endpoint-anchor jtk-managed jtk-draggable" id="dragDropWindow4">four<br><br><a href="#" class="cmdLink hide" rel="dragDropWindow4">toggle connections</a><br><a href="#" class="cmdLink drag" rel="dragDropWindow4">disable dragging</a><br><a href="#" class="cmdLink detach" rel="dragDropWindow4">detach all</a></div>
+                <div id="list" style="display: block;"><span><strong>Connections</strong></span><br><br><table><tbody><tr><th>Scope</th><th>Source</th><th>Target</th></tr><tr><td>blue</td><td>dragDropWindow1</td><td>dragDropWindow2</td></tr><tr><td>green</td><td>dragDropWindow1</td><td>dragDropWindow3</td></tr></tbody></table></div>
+            <div style="position: absolute; height: 22px; width: 22px; left: 211px; top: 201px; visibility: visible;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable endpointDrag jtk-endpoint-connected" dragid="jsPlumb_2_114" elid="dragDropWindow1"><svg style="position:absolute;left:0px;top:0px" width="22" height="22" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="11" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#316b31" stroke="none" style=""></circle></svg></div><div style="position: absolute; height: 21px; width: 25px; left: 279.5px; top: 105.5px; visibility: visible;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable endpointDrag jtk-endpoint-connected jtk-endpoint-full" dragid="jsPlumb_2_29" elid="dragDropWindow1"><svg style="position:absolute;left:0px;top:0px" width="25" height="21" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="21" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#00f" stroke="none" style=""></rect></svg></div><div style="position: absolute; height: 21px; width: 25px; left: 600.5px; top: 276.5px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable jtk-endpoint-connected jtk-endpoint-full"><svg style="position:absolute;left:0px;top:0px" width="25" height="21" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="21" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#00f" stroke="none" style=""></rect></svg></div><div style="position: absolute; height: 22px; width: 22px; left: 672px; top: 216px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable"><svg style="position:absolute;left:0px;top:0px" width="22" height="22" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="11" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#316b31" stroke="none" style=""></circle></svg></div><div style="position: absolute; height: 21px; width: 25px; left: 123.5px; top: 330.5px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable"><svg style="position:absolute;left:0px;top:0px" width="25" height="21" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="21" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#00f" stroke="none" style=""></rect></svg></div><div style="position: absolute; height: 22px; width: 22px; left: 195px; top: 330px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable jtk-endpoint-connected"><svg style="position:absolute;left:0px;top:0px" width="22" height="22" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="11" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#316b31" stroke="none" style=""></circle></svg></div><div style="position: absolute; height: 21px; width: 25px; left: 728.5px; top: 466.5px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable"><svg style="position:absolute;left:0px;top:0px" width="25" height="21" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="21" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#00f" stroke="none" style=""></rect></svg></div><div style="position: absolute; height: 22px; width: 22px; left: 625px; top: 406px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable"><svg style="position:absolute;left:0px;top:0px" width="22" height="22" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="11" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#316b31" stroke="none" style=""></circle></svg></div><div style="position: absolute; height: 34px; width: 34px; left: 135px; top: 195px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable"><svg style="position:absolute;left:0px;top:0px" width="34" height="34" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="17" cy="17" r="17" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="rgba(229,219,61,0.5)" stroke="none" style=""></circle></svg></div><div style="position: absolute; height: 34px; width: 34px; left: 526px; top: 270px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable"><svg style="position:absolute;left:0px;top:0px" width="34" height="34" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="17" cy="17" r="17" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="rgba(229,219,61,0.5)" stroke="none" style=""></circle></svg></div><div style="position: absolute; height: 34px; width: 34px; left: 84px; top: 444px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable"><svg style="position:absolute;left:0px;top:0px" width="34" height="34" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="17" cy="17" r="17" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="rgba(229,219,61,0.5)" stroke="none" style=""></circle></svg></div><div style="position: absolute; height: 34px; width: 34px; left: 584px; top: 520px;" class="jtk-endpoint jtk-endpoint-anchor jtk-draggable jtk-droppable"><svg style="position:absolute;left:0px;top:0px" width="34" height="34" pointer-events="all" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle cx="17" cy="17" r="17" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="rgba(229,219,61,0.5)" stroke="none" style=""></circle></svg></div><svg style="position:absolute;left:284.5px;top:108.5px" width="336" height="186" pointer-events="none" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg" class="jtk-connector"><path d="M 0 0 C 150 10 311 171 321 171 " transform="translate(7.5,7.5)" pointer-events="visibleStroke" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="url(#jsplumb_gradient_218)" stroke-width="5" stroke-dasharray="10 10 "></path><defs version="1.1" xmlns="http://www.w3.org/2000/svg"><linearGradient id="jsplumb_gradient_218" gradientUnits="userSpaceOnUse" version="1.1" xmlns="http://www.w3.org/2000/svg"><stop offset="0%" stop-color="#00f" version="1.1" xmlns="http://www.w3.org/2000/svg"></stop><stop offset="50%" stop-color="#09098e" version="1.1" xmlns="http://www.w3.org/2000/svg"></stop><stop offset="100%" stop-color="#00f" version="1.1" xmlns="http://www.w3.org/2000/svg"></stop></linearGradient></defs></svg><svg style="position:absolute;left:187px;top:203px" width="54" height="147" pointer-events="none" position="absolute" version="1.1" xmlns="http://www.w3.org/2000/svg" class="jtk-connector"><path d="M 16 0 C 26 63 -10 66 0 129 " transform="translate(19,9)" pointer-events="visibleStroke" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#316b31" style="" stroke-width="6"></path></svg></div>
+			<!-- /demo --></div>
+<div class="full-width-container">
+<div class="container">
+<!-- explanation -->
+            <div class="description">
+                <h4>DRAG &amp; DROP</h4>
+                <p>Drag from any Endpoint to similar Endpoints on other elements to create Connections.</p>
+                <p>Blue Endpoints use a <strong>beforeDrop</strong> 
+interceptor.  This enables
+                    you to intercept a new connection and decide whether
+ or not you wish to allow it to proceed. They are also configured to 
+automatically reattach if you drag a Connection off and drop it on the 
+background.</p>
+                <p>Yellow Endpoints are configured to use a <strong>beforeDetach</strong>
+ interceptor, which provides a way to programmatically override a 
+Connection detach. Yellow connections are painted with the Straight 
+connector</p>
+                <p>Green Endpoints support up to three Connections. Once
+ a green Endpoint has three connections, when you drag from it you will 
+drag the oldest connection made on the Endpoint.</p>
+                <div class="commands">
+                    <a id="clear" class="cmd" href="#">clear plumbing</a>
+                </div>
+            </div>
+            <!-- /explanation --></div>
+</div>
+
+
+            </div>
+        </div>
+
+        <div class="jtk-footer">
+    <div class="jtk-container">
+        <div class="jtk-copyright">
+            <div><img src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/logo-jsplumb-green.png"></div>
+            <div>
+                © 2019 jsPlumb Pty Ltd. All rights reserved. &nbsp;&nbsp;
+                ABN : 31 646 922 756&nbsp;&nbsp;
+            </div>
+        </div>
+        <div class="jtk-links">
+            <a href="https://jsplumbtoolkit.com/license">license</a>&nbsp;&nbsp;&nbsp;
+            <a href="https://jsplumbtoolkit.com/contact.html">contact</a>&nbsp;&nbsp;&nbsp;
+        </div>    
+        <div class="social-nav">                    
+            <a href="http://twitter.com/jsplumblib" class="link"><span class="icon-twitter"></span></a>
+<a href="http://github.com/jsplumb/jsplumb/" class="link"><span class="icon-github"></span></a>
+
+        </div>    
+    </div>
+</div>
+
+        <script src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/jsplumb.js"></script>
+
+        <script src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/app.js"></script>
+        <script src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/jquery.js"></script>
+<script src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/additional-methods.js"></script>
+<script src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/a"></script>
+
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-49979015-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+    
+
+<iframe allowtransparency="true" scrolling="no" name="__privateStripeMetricsController0" allowpaymentrequest="true" src="jsPlumb%20Toolkit%20-%20build%20Flowcharts,%20Diagrams%20and%20connectivity%20based%20applications%20fast_files/outer.html" aria-hidden="true" tabindex="-1" style="border: medium none !important; margin: 0px !important; padding: 0px !important; width: 1px !important; min-width: 100% !important; overflow: hidden !important; display: block !important; visibility: hidden !important; position: fixed !important; height: 1px !important; pointer-events: none !important;" frameborder="0"></iframe><div id="simple-translate"><div><div style="background-image: url(&quot;moz-extension://de695e6b-4af1-074b-a1b3-d393996347c8/icons/512.png&quot;); height: 22px; width: 22px; top: 219px; left: 616px;" class="simple-translate-button "></div><div class="simple-translate-panel " style="width: 300px; height: 200px; top: 0px; left: 0px; font-size: 13px; background-color: rgb(255, 255, 255);"><div class="simple-translate-result-wrapper" style="overflow: hidden;"><p class="simple-translate-result" style="color: rgb(0, 0, 0);"></p><p class="simple-translate-candidate" style="color: rgb(115, 115, 115);"></p></div></div></div></div></body><div title="Look Up Dictionary" class="itanywhere-activator itanywhere-bounceIn" style="left: 609px; top: 169px; display: none;"></div></html>
