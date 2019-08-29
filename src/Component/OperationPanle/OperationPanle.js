@@ -43,6 +43,14 @@ const nodes = [];
 const initJsPlumb = () => {
   const jsPlumb = window.jsPlumb;
   let instance = jsPlumb.getInstance({
+    DragOptions: { cursor: "pointer", zIndex: 2000 },
+    PaintStyle: { stroke: "#666" },
+    EndpointHoverStyle: { fill: "orange" },
+    HoverPaintStyle: { stroke: "orange" },
+    EndpointStyle: { width: 20, height: 16, stroke: "#666" },
+    Endpoint: "Rectangle",
+    Anchors: ["TopCenter", "TopCenter"],
+    Container: "js-container_for_node"
     // ConnectionOverlays: [
     //   [
     //     "Arrow",
@@ -59,7 +67,24 @@ const initJsPlumb = () => {
     // endpoint: ["Dot", { radius: 5, hoverClass: "myEndpointHover" }],
     // connector: ["Bezier", { curviness: 100 }]
   });
-  instance.batch(function() {});
+  instance.batch(function() {
+    instance.bind("connection", function(info, originalEvent) {
+      debugger;
+      // updateConnections(info.connection);
+    });
+    instance.bind("connectionDetached", function(info, originalEvent) {
+      debugger;
+      // updateConnections(info.connection, true);
+    });
+
+    instance.bind("connectionMoved", function(info, originalEvent) {
+      debugger;
+      //  only remove here, because a 'connection' event is also fired.
+      // in a future release of jsplumb this extra connection event will not
+      // be fired.
+      // updateConnections(info.connection, true);
+    });
+  });
   return instance;
 };
 
@@ -71,13 +96,15 @@ const initJsPlumb = () => {
  * @param {*} iconClass 节点的icon
  * @param {*} container 装节点的容器
  * @param {*} instance jsplumb实例
+ * @param {*} nodeId 节点id
  */
-const render = ({ x, y, text, iconClass, container, instance }) => {
+const render = ({ x, y, text, iconClass, container, instance, nodeId }) => {
   const nodeDom = document.createElement("div");
   nodeDom.className = "node";
   nodeDom.title = text;
   nodeDom.style.left = x;
   nodeDom.style.top = y;
+  nodeDom.id = nodeId;
   nodeDom.innerHTML = `
       <span class="node-icon_left"><i class="fa ${iconClass}"></i></span>
       <span class="node-text"><span>${text}</span></span>
@@ -86,39 +113,99 @@ const render = ({ x, y, text, iconClass, container, instance }) => {
   container.append(nodeDom);
   // 让节点可以拖拽
   // instance.draggable(window.jsPlumb.getSelector(".container .node"));
-  instance.draggable(nodeDom, {
-    containment: container
+
+  var color2 = "#316b31";
+  var exampleDropOptions = {
+    tolerance: "touch",
+    hoverClass: "dropHover",
+    activeClass: "dragActive"
+  };
+  var exampleEndpoint2 = {
+    endpoint: ["Dot", { radius: 10 }],
+    // paintStyle: { fill: color2 },
+    hoverPaintStyle: { strokeStyle: color2, fillStyle: color2, radius: 9 },
+    paintStyle: {
+      strokeStyle: color2,
+      fillStyle: color2,
+      radius: 5.5,
+      lineWidth: 1
+    },
+    isSource: true,
+    isTarget: true,
+    scope: "green",
+    connectorStyle: {
+      strokeStyle: color2,
+      lineWidth: 1
+    },
+    // connectorStyle: { stroke: color2, strokeWidth: 6 },
+    connector: ["Bezier", { curviness: 63 }],
+    maxConnections: 3,
+    dropOptions: exampleDropOptions
+  };
+  var exampleEndpoint = {
+    endpoint: "Dot",
+    // hoverPaintStyle: {strokeStyle: '#3BFEB3',fillStyle: "#3D3D3D", radius: 7},
+    hoverPaintStyle: {
+      strokeStyle: 'rgba(59,252,178,0.5)',
+      fillStyle: 'rgba(59,252,178,0.5)',
+      radius: 10
+    },
+    dropOptions: exampleDropOptions,
+    maxConnections: 1,
+    connectorStyle: {
+      strokeStyle: "rgba(153,153,153,1)",
+      lineWidth: 1.5
+    },
+    connectorHoverStyle: {
+      lineWidth: 1.5
+      // strokeStyle: "#E03A49"
+    },
+    paintStyle: {
+      strokeStyle: "rgba(68,68,68,1)",
+      fillStyle: "rgba(68,68,68,1)",
+      radius: 5.5,
+      lineWidth: 1.5
+    },
+    isSource: true,
+    isTarget: true,
+    scope: "green",
+  };
+  instance.batch(function() {
+    instance.draggable(nodeDom, {
+      containment: container
+    });
+    instance.addEndpoint(nodeId, { anchor: [0.5, 1, 0, 1] }, exampleEndpoint);
   });
   return nodeDom;
 };
 
 /**
  * 一次性渲染所有节点
- * @param {*} nodes 
- * @param {*} container 
- * @param {*} instance 
+ * @param {*} nodes
+ * @param {*} container
+ * @param {*} instance
  */
 const reRender = (nodes, container, instance) => {
   nodes.forEach(item => {
-    const { componentId } = item;
+    const { componentId, nodeId } = item;
     const nodeInfo = data.find(item => item.id === componentId);
-    render({ ...nodeInfo, ...item, container, instance });
+    render({ ...nodeInfo, ...item, container, instance, nodeId });
   });
-}
+};
 
 /**
  * 获取节点展示的位置
- * @param {*} event 
+ * @param {*} event
  */
-const getPosition = (event) => {
+const getPosition = event => {
   const mouseX = event.pageX;
   const mouseY = event.pageY;
   const parentX = event.target.offsetLeft;
   const parentY = event.target.offsetTop;
   const x = mouseX - parentX + "px";
   const y = mouseY - parentY + "px";
-  return {x, y}
-}
+  return { x, y };
+};
 
 // jsPlumb 实例
 let instance = null;
@@ -132,13 +219,13 @@ const OperationPanle = props => {
   useEffect(() => {
     instance = initJsPlumb();
     const container = containerRef.current;
-    reRender(reRenderNodes, container, instance)
+    reRender(reRenderNodes, container, instance);
     return () => {};
   }, []);
 
   /**
    * 处理节点释放到容器中
-   * @param {*} event 
+   * @param {*} event
    */
   const drop = event => {
     event.preventDefault();
@@ -147,7 +234,7 @@ const OperationPanle = props => {
     const data = JSON.parse(event.dataTransfer.getData("text"));
 
     // 获取节点展示的位置
-    const {x, y} = getPosition(event)
+    const { x, y } = getPosition(event);
 
     const container = event.target;
     const UUID = createUUID();
@@ -160,20 +247,25 @@ const OperationPanle = props => {
       x,
       y
     };
-    render({ ...data, x, y, container, instance });
+    render({ ...data, x, y, container, instance, nodeId: UUID });
     nodes.push(nodeInfo);
     console.log("node info in panle:", JSON.stringify(nodes));
   };
+
+  function allowDrop(event) {
+    event.preventDefault();
+  }
 
   return (
     <Box
       ref={containerRef}
       className="container"
+      id="js-container_for_node"
+      onDragOver={allowDrop}
       onDrop={drop}
     ></Box>
   );
 };
-
 
 OperationPanle.propTypes = {};
 
