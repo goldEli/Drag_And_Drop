@@ -20,6 +20,7 @@ function drag(event) {
   const id = event.target.id.replace(idPrefix, "");
   let nodeInfo = data.find(item => item.id === id);
   nodeInfo = {...nodeInfo, text: nodeInfo.text + index}
+  // 让节点 drop 的时候可以得到数据
   event.dataTransfer.setData("text", JSON.stringify(nodeInfo));
 }
 

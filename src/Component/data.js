@@ -44,6 +44,30 @@ const data = [
         description: "训练数据集的数据源"
       },
       {
+        cnName: "数据集1",
+        name: "dataset",
+        dataTypeDesc: "数据集1",
+        dataType: "dataset1",
+        type: 1,
+        description: "训练数据集的数据源1"
+      },
+      {
+        cnName: "全表统计",
+        name: "stat",
+        dataTypeDesc: "数据集",
+        dataType: "dataset",
+        type: 2,
+        description: "全表统计，JSON格式的数据"
+      },
+      {
+        cnName: "全表统计",
+        name: "stat",
+        dataTypeDesc: "数据集",
+        dataType: "dataset",
+        type: 2,
+        description: "全表统计，JSON格式的数据"
+      },
+      {
         cnName: "全表统计",
         name: "stat",
         dataTypeDesc: "数据集",
