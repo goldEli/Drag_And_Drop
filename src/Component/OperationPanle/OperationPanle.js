@@ -3,7 +3,8 @@ import PropTypes, { element, func } from "prop-types";
 import styled from "styled-components";
 import "./OperationPanle.css";
 import { createUUID } from "../../libs/utils";
-import data from "../data";
+import algInfoData from "../data";
+import $ from "jquery";
 
 const Box = styled.div`
   height: 100%;
@@ -11,37 +12,43 @@ const Box = styled.div`
   position: relative;
 `;
 
-const reRenderData = {
-  nodes: [
-    {
-      componentId: "2",
-      nodeId: "89224e7d-b7d2-4e1f-9035-2f0ec07a5ccd",
-      text: "朴素贝叶斯1",
-      x: "160px",
-      y: "75px"
-    },
-    {
-      componentId: "2",
-      nodeId: "801e5434-dde8-453b-97df-11b6fc42cc74",
-      text: "朴素贝叶斯2",
-      x: "284px",
-      y: "149px"
-    },
-    {
-      componentId: "3",
-      nodeId: "a40917e3-0f85-4524-afb8-2e38487b1b34",
-      text: "傅里叶3",
-      x: "108px",
-      y: "166px"
-    }
-  ],
-  links: []
-};
-
 const nodes = [];
+const links = [];
 
 // jsPlumb 实例
 let instance = null;
+
+/**
+ * 操作平台组件
+ * @param {*} props
+ */
+function OperationPanle(props) {
+  const { reRenderData } = props;
+
+  const containerRef = useRef(null);
+
+  /**
+   * 一次性渲染所有节点，端口，连线
+   */
+  useEffect(() => {
+    instance = initJsPlumb();
+    const container = containerRef.current;
+    const { nodes, links } = reRenderData;
+    reRenderNodes(nodes, instance, container);
+    reRenderLinks(links, instance);
+    return () => {};
+  }, [reRenderData]);
+
+  return (
+    <Box
+      ref={containerRef}
+      className="container"
+      id="js-container_for_node"
+      onDragOver={allowDrop}
+      onDrop={drop}
+    ></Box>
+  );
+}
 
 /**
  * 初始化 jsplumb，并生成实例
@@ -49,7 +56,7 @@ let instance = null;
 function initJsPlumb() {
   const jsPlumb = window.jsPlumb;
   let instance = jsPlumb.getInstance({
-    DragOptions: { cursor: "pointer", zIndex: 2000 },
+    DragOptions: { cursor: "pointer", zIndex: 10 },
     Container: "js-container_for_node",
     // 定义线，箭头的位置
     ConnectionOverlays: [
@@ -67,20 +74,18 @@ function initJsPlumb() {
         "Custom", // 自定义箭头样式：一个 x 的图片， 点击删除连线
         {
           create: () => {
-            const node = document.createElement("div");
-            node.style.cursor = "pointer";
-            node.style.width = "14px";
-            node.style.height = "14px";
-
-            const addClassCallBack = function() {
-              node.className = "icon_delLink";
-            };
-            const removeClassCallBack = function() {
-              node.className = "";
-            };
-            node.addEventListener("mouseenter", addClassCallBack);
-            node.addEventListener("mouseleave", removeClassCallBack);
-
+            var node = $(
+              '<div style="cursor:pointer; width:14px; height:14px"></div>'
+            );
+            node.unbind("mouseenter");
+            node.unbind("mouseleave");
+            node.mouseenter(function() {
+              node.addClass("icon_delLink");
+            });
+            node.mouseleave(function() {
+              node.removeClass("icon_delLink");
+            });
+            //  返回 jQuery 对象，jQuery 对象才能加上内置的 class
             return node;
           },
           location: 0.5,
@@ -91,16 +96,55 @@ function initJsPlumb() {
   });
   instance.batch(function() {
     instance.bind("connection", function(info, originalEvent) {
-      debugger;
+      // 当组件自身相连时，删除该条线。
+      console.log("sourceId:", info.sourceId);
+      console.log("targetId:", info.targetId);
+      if (info.sourceId === info.targetId) {
+        instance.detach(info.connection);
+      }
+      if (originalEvent && info.sourceId !== info.targetId) {
+        let inNodeId = info.sourceId,
+          inPortName = $(info.sourceEndpoint.canvas).attr("data-name"),
+          inType = $(info.sourceEndpoint.canvas).attr("data-type"),
+          outPortId = $(info.sourceEndpoint.canvas).attr("data-id"),
+          outNodeId = info.targetId,
+          outPortName = $(info.targetEndpoint.canvas).attr("data-name"),
+          outType = $(info.targetEndpoint.canvas).attr("data-type"),
+          inPortId = $(info.targetEndpoint.canvas).attr("data-id"),
+          linkId = inNodeId + outNodeId + inPortName + outPortName;
+        let link = {
+          inNodeId: inNodeId,
+          inPortName: inPortName,
+          inType: inType,
+          inPortId: inPortId,
+          outNodeId: outNodeId,
+          outPortName: outPortName,
+          outType: outType,
+          outPortId: outPortId,
+          linkId: linkId
+        };
+        links.push(link)
+        console.log('links：', links);
+      }
       // updateConnections(info.connection);
     });
+    instance.bind("click", function(info, a) {
+      // 画面删除
+      instance.detach(info);
+    });
     instance.bind("connectionDetached", function(info, originalEvent) {
-      debugger;
+      let inNodeId = info.sourceId,
+      outPortName = $(info.targetEndpoint.canvas).attr("data-name"),
+      inPortName = $(info.sourceEndpoint.canvas).attr("data-name"),
+      outNodeId = info.targetId,
+      linkId = inNodeId + outNodeId + inPortName + outPortName
+      console.log("删除：",linkId, links)
+      // debugger;
       // updateConnections(info.connection, true);
     });
 
     instance.bind("connectionMoved", function(info, originalEvent) {
-      debugger;
+      // debugger;
       //  only remove here, because a 'connection' event is also fired.
       // in a future release of jsplumb this extra connection event will not
       // be fired.
@@ -117,30 +161,51 @@ function initJsPlumb() {
  * @param {*} nodeId
  * @rentern [sourceAnchors, targetAnchors]
  */
-function createPortsDataForRender(ports, nodeId) {
-  const targetAnchors = ports.filter(port => port.type === 1);
-  const sourceAnchors = ports.filter(port => port.type === 2);
+function portsDataProcess(ports, nodeId) {
 
-  const targetAnchorGap =
-    parseInt((1 / (targetAnchors.length + 1)) * 100) / 100;
-  const sourceAnchorGap =
-    parseInt((1 / (sourceAnchors.length + 1)) * 100) / 100;
+  // 目标端口和源端口的间隔数，比如有1个端口就有是2个间隔
+  let sumOfTargetAnchorsGap = ports.filter(port => port.type === 1).length + 1;
+  let sumOfSourceAnchorsGap = ports.filter(port => port.type === 2).length + 1;
 
-  console.log(ports);
+  // 目标端口和源端口的间隔大小
+  let targetAnchorGap = parseInt((1 / (sumOfTargetAnchorsGap)) * 100) / 100;
+  let sourceAnchorGap = parseInt((1 / (sumOfSourceAnchorsGap)) * 100) / 100;
 
-  // [水平位置左到右0-1，垂直位置上到下0-1，0, 贝塞尔曲线曲率]
-  return {
-    sourceAnchors: sourceAnchors.map((item, index) => ({
+  console.log("ports", ports);
+
+  return ports.map((item, index) => {
+    
+    // 是否是源端口
+    const isSourcePort = item.type === 2;
+
+    // 每生成一个端口数据，端口间距减一
+    isSourcePort ? --sumOfSourceAnchorsGap : --sumOfTargetAnchorsGap;
+
+    /**
+     * 端口位置
+     * [水平位置左到右，范围0-1，垂直位置上到下，范围0-1，0, 贝塞尔曲线曲率]
+     */
+    const position = [
+      isSourcePort
+        ? sourceAnchorGap * sumOfSourceAnchorsGap
+        : targetAnchorGap * sumOfTargetAnchorsGap,
+      isSourcePort ? 1 : 0,
+      0,
+      isSourcePort ? 0.2 : -0.2
+    ]
+    
+    // 端口id
+    const id = isSourcePort
+    ? `${nodeId}_out_${item.name}`
+    : `${nodeId}_in_${item.name}`
+
+    return {
       ...item,
-      position: [sourceAnchorGap * (index + 1), 1, 0, 0.2],
-      id: `${nodeId}_out_${item.name}`
-    })),
-    targetAnchors: targetAnchors.map((item, index) => ({
-      ...item,
-      position: [targetAnchorGap * (index + 1), 0, 0, -0.2],
-      id: `${nodeId}_in_${item.name}`
-    }))
-  };
+      isSourcePort,
+      position,
+      id
+    };
+  });
 }
 
 /**
@@ -151,9 +216,12 @@ function createPortsDataForRender(ports, nodeId) {
 function renderPortsInfoByHover(endPoint, anchor) {
   // 监听 mouseenter 事件，展示端口详细信息面板
   endPoint.canvas.addEventListener("mouseenter", event => {
+
+    // 生成端口信息面板渲染的位置
     const left = event.pageX + 15 + "px";
     const top = event.pageY - 30 + "px";
 
+    // 创建端口信息面板
     const dom = document.createElement("div");
     dom.style.position = "fixed";
     dom.style.left = left;
@@ -161,6 +229,7 @@ function renderPortsInfoByHover(endPoint, anchor) {
     dom.id = "portMessage";
     dom.className =
       "portMessageS bg_color_13 font_color_11 co_bg_rightclick_dialog";
+
     const label = "端口名称";
     const dataType = "数据类型";
     const portDescription = "端口描述";
@@ -169,6 +238,8 @@ function renderPortsInfoByHover(endPoint, anchor) {
       <div class="portRow">${dataType}: ${anchor.dataType}</div>  
       <div class="portRow">${portDescription}: ${anchor.description}</div>  
     `;
+
+    // render
     document.body.append(dom);
   });
   // 监听 mouseleave 事件，删除端口详细信息面板
@@ -220,37 +291,29 @@ function renderPorts(instance, ports, nodeId) {
   const targetEndPoint = { ...endPointBasicInfo, isTarget: true };
 
   // 生成用于渲染端口的数据
-  const { sourceAnchors, targetAnchors } = createPortsDataForRender(
-    ports,
-    nodeId
-  );
+  const portsData = portsDataProcess(ports, nodeId);
 
-  // 生成源端口
-  sourceAnchors.forEach(anchor => {
+  // 生成源端口 和 目标端口
+  portsData.forEach(item => {
+    console.log('item.isSourcePort',item.isSourcePort)
     const endPoint = instance.addEndpoint(
       nodeId,
       {
-        anchor: anchor.position,
-        scope: anchor.dataType,
-        uuid: anchor.id
+        anchor: item.position,
+        scope: item.dataType,
+        uuid: item.id
       },
-      sourceEndPoint
+      item.isSourcePort ? sourceEndPoint : targetEndPoint
     );
+
+    // 为节点添加属性，方便连线的时候获取
+    $(endPoint.canvas)
+      .attr("data-name", item.name)
+      .attr("data-id", item.id)
+      .attr("data-type", item.dataType);
+
     // hover端口可查看详细信息
-    renderPortsInfoByHover(endPoint, anchor);
-  });
-  // 生成目标端口
-  targetAnchors.forEach(anchor => {
-    const endPoint = instance.addEndpoint(
-      nodeId,
-      {
-        anchor: anchor.position,
-        scope: anchor.dataType,
-        uuid: anchor.id
-      },
-      targetEndPoint
-    );
-    renderPortsInfoByHover(endPoint, anchor);
+    renderPortsInfoByHover(endPoint, item);
   });
 }
 
@@ -286,22 +349,34 @@ function renderNode(option) {
     instance.draggable(nodeDom, {
       containment: container
     });
-    // 渲染端口
+    // 渲染节点上的端口
     renderPorts(instance, ports, nodeId);
   });
   return nodeDom;
 }
 
 /**
- * 一次性渲染所有节点
+ * 一次性渲染所有的线
+ * @param {*} links
+ * @param {*} instance
+ */
+function reRenderLinks(links, instance) {
+  links.forEach(item => {
+    const { inPortId, outPortId } = item;
+    instance.connect({ uuids: [outPortId, inPortId], editable: true });
+  });
+}
+
+/**
+ * 一次性渲染所有节点，端口
  * @param {*} nodes
  * @param {*} container
  * @param {*} instance
  */
-function reRenderNodes(nodes, container, instance) {
+function reRenderNodes(nodes, instance, container) {
   nodes.forEach(item => {
     const { componentId, nodeId } = item;
-    const nodeInfo = data.find(item => item.id === componentId);
+    const nodeInfo = algInfoData.find(item => item.id === componentId);
     renderNode({ ...nodeInfo, ...item, container, instance, nodeId });
   });
 }
@@ -353,35 +428,10 @@ function drop(event) {
 
 /**
  * 移动过程中，节点释放前，阻止浏览器默认事件
- * @param {*} event 
+ * @param {*} event
  */
 function allowDrop(event) {
   event.preventDefault();
-}
-
-/**
- * 操作平台组件
- * @param {*} props
- */
-function OperationPanle(props) {
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    instance = initJsPlumb();
-    const container = containerRef.current;
-    reRenderNodes(reRenderData.nodes, container, instance);
-    return () => {};
-  }, []);
-
-  return (
-    <Box
-      ref={containerRef}
-      className="container"
-      id="js-container_for_node"
-      onDragOver={allowDrop}
-      onDrop={drop}
-    ></Box>
-  );
 }
 
 OperationPanle.propTypes = {};
