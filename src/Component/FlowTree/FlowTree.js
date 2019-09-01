@@ -15,6 +15,10 @@ const Item = styled.li`
 const idPrefix = "node_id_";
 let index = 0
 
+/**
+ * 拖拽处理
+ * @param {*} event 
+ */
 function drag(event) {
   ++index
   const id = event.target.id.replace(idPrefix, "");

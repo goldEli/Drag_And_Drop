@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import PropTypes, { element } from "prop-types";
+import PropTypes, { element, func } from "prop-types";
 import styled from "styled-components";
 import "./OperationPanle.css";
 import { createUUID } from "../../libs/utils";
@@ -11,36 +11,42 @@ const Box = styled.div`
   position: relative;
 `;
 
-const reRenderNodes = [
-  {
-    componentId: "2",
-    nodeId: "89224e7d-b7d2-4e1f-9035-2f0ec07a5ccd",
-    text: "朴素贝叶斯1",
-    x: "160px",
-    y: "75px"
-  },
-  {
-    componentId: "2",
-    nodeId: "801e5434-dde8-453b-97df-11b6fc42cc74",
-    text: "朴素贝叶斯2",
-    x: "284px",
-    y: "149px"
-  },
-  {
-    componentId: "3",
-    nodeId: "a40917e3-0f85-4524-afb8-2e38487b1b34",
-    text: "傅里叶3",
-    x: "108px",
-    y: "166px"
-  }
-];
+const reRenderData = {
+  nodes: [
+    {
+      componentId: "2",
+      nodeId: "89224e7d-b7d2-4e1f-9035-2f0ec07a5ccd",
+      text: "朴素贝叶斯1",
+      x: "160px",
+      y: "75px"
+    },
+    {
+      componentId: "2",
+      nodeId: "801e5434-dde8-453b-97df-11b6fc42cc74",
+      text: "朴素贝叶斯2",
+      x: "284px",
+      y: "149px"
+    },
+    {
+      componentId: "3",
+      nodeId: "a40917e3-0f85-4524-afb8-2e38487b1b34",
+      text: "傅里叶3",
+      x: "108px",
+      y: "166px"
+    }
+  ],
+  links: []
+};
 
 const nodes = [];
+
+// jsPlumb 实例
+let instance = null;
 
 /**
  * 初始化 jsplumb，并生成实例
  */
-const initJsPlumb = () => {
+function initJsPlumb() {
   const jsPlumb = window.jsPlumb;
   let instance = jsPlumb.getInstance({
     DragOptions: { cursor: "pointer", zIndex: 2000 },
@@ -102,7 +108,7 @@ const initJsPlumb = () => {
     });
   });
   return instance;
-};
+}
 
 /**
  * 处理端口信息，生成源端口和目标端口用于绘制的信息
@@ -111,7 +117,7 @@ const initJsPlumb = () => {
  * @param {*} nodeId
  * @rentern [sourceAnchors, targetAnchors]
  */
-const createPortsDataForRender = (ports, nodeId) => {
+function createPortsDataForRender(ports, nodeId) {
   const targetAnchors = ports.filter(port => port.type === 1);
   const sourceAnchors = ports.filter(port => port.type === 2);
 
@@ -135,14 +141,14 @@ const createPortsDataForRender = (ports, nodeId) => {
       id: `${nodeId}_in_${item.name}`
     }))
   };
-};
+}
 
 /**
  * 端口 hover 显示端口的详细信息
  * @param {*} endPoint
  * @param {*} anchor
  */
-const renderPortInfoByHover = (endPoint, anchor) => {
+function renderPortsInfoByHover(endPoint, anchor) {
   // 监听 mouseenter 事件，展示端口详细信息面板
   endPoint.canvas.addEventListener("mouseenter", event => {
     const left = event.pageX + 15 + "px";
@@ -170,15 +176,15 @@ const renderPortInfoByHover = (endPoint, anchor) => {
     const dom = document.getElementById("portMessage");
     dom.parentNode.removeChild(dom);
   });
-};
+}
 
 /**
  * 渲染端口
- * @param {*} instance 
- * @param {*} ports 
- * @param {*} nodeId 
+ * @param {*} instance
+ * @param {*} ports
+ * @param {*} nodeId
  */
-const renderPorts = (instance, ports, nodeId) => {
+function renderPorts(instance, ports, nodeId) {
   // 配置端口基本信息信息
   const endPointBasicInfo = {
     endpoint: "Dot",
@@ -209,9 +215,9 @@ const renderPorts = (instance, ports, nodeId) => {
     }
   };
   // 配置源端口信息
-  const sourceEndPoint = { ...endPointBasicInfo, isSource: true,};
+  const sourceEndPoint = { ...endPointBasicInfo, isSource: true };
   // 配置目标端口信息
-  const targetEndPoint = { ...endPointBasicInfo, isTarget: true,};
+  const targetEndPoint = { ...endPointBasicInfo, isTarget: true };
 
   // 生成用于渲染端口的数据
   const { sourceAnchors, targetAnchors } = createPortsDataForRender(
@@ -231,7 +237,7 @@ const renderPorts = (instance, ports, nodeId) => {
       sourceEndPoint
     );
     // hover端口可查看详细信息
-    renderPortInfoByHover(endPoint, anchor);
+    renderPortsInfoByHover(endPoint, anchor);
   });
   // 生成目标端口
   targetAnchors.forEach(anchor => {
@@ -244,9 +250,9 @@ const renderPorts = (instance, ports, nodeId) => {
       },
       targetEndPoint
     );
-    renderPortInfoByHover(endPoint, anchor);
+    renderPortsInfoByHover(endPoint, anchor);
   });
-};
+}
 
 /**
  * 渲染节点
@@ -258,17 +264,8 @@ const renderPorts = (instance, ports, nodeId) => {
  * @param {*} option.instance jsplumb实例
  * @param {*} option.nodeId 节点id
  */
-const render = (option) => {
-  const {
-    x,
-    y,
-    text,
-    iconClass,
-    ports,
-    container,
-    instance,
-    nodeId
-  } = option
+function renderNode(option) {
+  const { x, y, text, iconClass, ports, container, instance, nodeId } = option;
   // 创建节点
   const nodeDom = document.createElement("div");
   nodeDom.className = "node";
@@ -293,7 +290,7 @@ const render = (option) => {
     renderPorts(instance, ports, nodeId);
   });
   return nodeDom;
-};
+}
 
 /**
  * 一次性渲染所有节点
@@ -301,19 +298,19 @@ const render = (option) => {
  * @param {*} container
  * @param {*} instance
  */
-const reRender = (nodes, container, instance) => {
+function reRenderNodes(nodes, container, instance) {
   nodes.forEach(item => {
     const { componentId, nodeId } = item;
     const nodeInfo = data.find(item => item.id === componentId);
-    render({ ...nodeInfo, ...item, container, instance, nodeId });
+    renderNode({ ...nodeInfo, ...item, container, instance, nodeId });
   });
-};
+}
 
 /**
  * 获取节点展示的位置
  * @param {*} event
  */
-const getPosition = event => {
+function getPosition(event) {
   const mouseX = event.pageX;
   const mouseY = event.pageY;
   const parentX = event.target.offsetLeft;
@@ -321,59 +318,60 @@ const getPosition = event => {
   const x = mouseX - parentX + "px";
   const y = mouseY - parentY + "px";
   return { x, y };
-};
+}
 
-// jsPlumb 实例
-let instance = null;
+/**
+ * 处理节点释放到容器中
+ * @param {*} event
+ */
+function drop(event) {
+  event.preventDefault();
+
+  // 获取从列表那边获取的数据
+  const data = JSON.parse(event.dataTransfer.getData("text"));
+
+  // 获取节点展示的位置
+  const { x, y } = getPosition(event);
+
+  const container = event.target;
+  const UUID = createUUID();
+
+  // 保存节点数据，为了二次渲染
+  const nodeInfo = {
+    componentId: data.id,
+    nodeId: UUID,
+    text: data.text,
+    x,
+    y
+  };
+
+  // 渲染节点
+  renderNode({ ...data, x, y, container, instance, nodeId: UUID });
+  nodes.push(nodeInfo);
+  console.log("node info in panle:", JSON.stringify(nodes));
+}
+
+/**
+ * 移动过程中，节点释放前，阻止浏览器默认事件
+ * @param {*} event 
+ */
+function allowDrop(event) {
+  event.preventDefault();
+}
+
 /**
  * 操作平台组件
  * @param {*} props
  */
-const OperationPanle = props => {
-
+function OperationPanle(props) {
   const containerRef = useRef(null);
 
   useEffect(() => {
     instance = initJsPlumb();
     const container = containerRef.current;
-    reRender(reRenderNodes, container, instance);
+    reRenderNodes(reRenderData.nodes, container, instance);
     return () => {};
   }, []);
-
-  /**
-   * 处理节点释放到容器中
-   * @param {*} event
-   */
-  const drop = event => {
-    event.preventDefault();
-
-    // 获取从列表那边获取的数据
-    const data = JSON.parse(event.dataTransfer.getData("text"));
-
-    // 获取节点展示的位置
-    const { x, y } = getPosition(event);
-
-    const container = event.target;
-    const UUID = createUUID();
-
-    // 用于保存的节点数据
-    const nodeInfo = {
-      componentId: data.id,
-      nodeId: UUID,
-      text: data.text,
-      x,
-      y
-    };
-
-    // 渲染节点
-    render({ ...data, x, y, container, instance, nodeId: UUID });
-    nodes.push(nodeInfo);
-    console.log("node info in panle:", JSON.stringify(nodes));
-  };
-
-  function allowDrop(event) {
-    event.preventDefault();
-  }
 
   return (
     <Box
@@ -384,7 +382,7 @@ const OperationPanle = props => {
       onDrop={drop}
     ></Box>
   );
-};
+}
 
 OperationPanle.propTypes = {};
 
